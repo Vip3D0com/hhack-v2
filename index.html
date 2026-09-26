@@ -1,0 +1,1275 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>MULTI-GAMES VIP 3D 🎮</title>
+    <style>
+        :root {
+            --bg-color: #05070a;
+            --accent-gold: #00ffcc;
+            --win-green: #00ff66;
+            --bomb-red: #ff0055;
+            --blue: #00d4ff;
+            --neon-green: #00ff66;
+            --mine-teal: #00ffcc;
+            --glass-bg: rgba(16, 22, 34, 0.85);
+            --border-glow: 0 0 25px rgba(0, 255, 204, 0.4), inset 0 0 15px rgba(0, 212, 255, 0.2);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            background-color: var(--bg-color);
+            color: #fff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+            perspective: 1200px;
+            position: relative;
+        }
+
+        /* خلفية الجسيمات الحية (Canvas) */
+        #matrix-canvas {
+            position: fixed;
+            inset: 0;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .overlay, #main-container {
+            position: relative;
+            z-index: 10;
+        }
+
+        .overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(5, 7, 10, 0.82);
+            backdrop-filter: blur(12px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            flex-direction: column;
+        }
+
+        /* شريط الإشعارات السيبراني العائم (Cyber Ticker) */
+        .cyber-ticker {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(16, 22, 34, 0.9);
+            border-bottom: 1px solid var(--accent-gold);
+            color: var(--accent-gold);
+            font-size: 0.72rem;
+            padding: 5px 15px;
+            text-align: center;
+            z-index: 2500;
+            letter-spacing: 1px;
+            overflow: hidden;
+            white-space: nowrap;
+            box-shadow: 0 0 15px rgba(0,255,204,0.2);
+            backdrop-filter: blur(5px);
+        }
+        .cyber-ticker span {
+            display: inline-block;
+            animation: tickerSlide 18s linear infinite;
+        }
+        @keyframes tickerSlide {
+            0% { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
+        }
+
+        /* تصميم الدورية 3D الفاخرة الموحدة للباسورد والـ ID */
+        .login-circle-3d {
+            background: radial-gradient(circle, rgba(25, 35, 55, 0.95) 0%, rgba(10, 15, 25, 0.98) 100%);
+            width: 320px;
+            height: 320px;
+            border-radius: 50%;
+            border: 3px solid var(--accent-gold);
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 35px;
+            position: relative;
+            box-shadow: 
+                0 0 40px var(--accent-gold),
+                inset 0 0 25px rgba(0, 255, 204, 0.4),
+                0 20px 50px rgba(0,0,0,0.9);
+            transform: translateZ(30px);
+            animation: circlePulse 3s infinite alternate;
+        }
+
+        @keyframes circlePulse {
+            0% { box-shadow: 0 0 30px var(--accent-gold), inset 0 0 20px rgba(0,255,204,0.3), 0 20px 50px rgba(0,0,0,0.9); border-color: var(--accent-gold); }
+            100% { box-shadow: 0 0 55px #fff, inset 0 0 35px var(--accent-gold), 0 25px 60px rgba(0,0,0,0.95); border-color: #fff; }
+        }
+
+        .login-circle-3d h2 {
+            font-size: 1.25rem;
+            letter-spacing: 2px;
+            background: linear-gradient(45deg, #fff, var(--accent-gold));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 12px;
+            text-shadow: 0 0 10px rgba(255,255,255,0.4);
+        }
+
+        .login-box {
+            background: var(--glass-bg);
+            padding: 30px 25px;
+            border-radius: 24px;
+            border: 2px solid var(--accent-gold);
+            text-align: center;
+            width: 90%;
+            max-width: 360px;
+            position: relative;
+            box-shadow: var(--border-glow), 0 20px 40px rgba(0,0,0,0.8);
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.15);
+            background: rgba(0, 0, 0, 0.6);
+            color: var(--accent-gold);
+            text-align: center;
+            font-size: 1rem;
+            outline: none;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.8);
+            transition: 0.3s;
+        }
+        input:focus {
+            border-color: var(--accent-gold);
+            box-shadow: 0 0 15px var(--accent-gold), inset 0 2px 5px rgba(0,0,0,0.8);
+        }
+        
+        .version-tag {
+            position: absolute;
+            bottom: 12px;
+            left: 0;
+            right: 0;
+            font-size: 0.65rem;
+            color: rgba(255,255,255,0.4);
+            text-align: center;
+            letter-spacing: 1.5px;
+        }
+
+        /* الثقب الكوني (Cosmic Portal) لشاشة التحميل */
+        .portal-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .portal-ring {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            border: 4px solid transparent;
+            border-top-color: var(--accent-gold);
+            border-bottom-color: var(--blue);
+            animation: portalSpin 1.2s cubic-bezier(0.68, -0.55, 0.27, 1.55) infinite;
+            position: relative;
+            box-shadow: 0 0 30px rgba(0,255,204,0.4), inset 0 0 20px rgba(0,212,255,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .portal-ring::before {
+            content: '';
+            position: absolute;
+            inset: 8px;
+            border-radius: 50%;
+            border: 3px solid transparent;
+            border-left-color: #fff;
+            border-right-color: var(--neon-green);
+            animation: portalSpinReverse 0.8s linear infinite;
+        }
+
+        .portal-core {
+            font-size: 2.2rem;
+            animation: corePulse 1.5s ease-in-out infinite alternate;
+        }
+
+        @keyframes portalSpin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes portalSpinReverse {
+            0% { transform: rotate(360deg); }
+            100% { transform: rotate(0deg); }
+        }
+
+        @keyframes corePulse {
+            0% { transform: scale(0.85); filter: drop-shadow(0 0 5px var(--accent-gold)); }
+            100% { transform: scale(1.15); filter: drop-shadow(0 0 20px #fff); }
+        }
+
+        .portal-text {
+            font-size: 1.05rem;
+            color: #fff;
+            font-weight: bold;
+            letter-spacing: 1px;
+            text-shadow: 0 0 10px rgba(0,255,204,0.6);
+            min-height: 30px;
+            text-align: center;
+        }
+
+        .trial-badge {
+            background: linear-gradient(135deg, rgba(0,255,204,0.1), rgba(0,212,255,0.1));
+            border: 1px dashed var(--accent-gold);
+            color: var(--accent-gold);
+            padding: 6px 10px;
+            border-radius: 10px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .lobby-wrapper {
+            width: 92%;
+            max-width: 650px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .games-row-top {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            width: 100%;
+        }
+
+        .games-row-bottom {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            width: 68%;
+            margin: 0 auto;
+        }
+        
+        .game-card {
+            background: radial-gradient(circle, rgba(25, 35, 55, 0.9) 0%, rgba(12, 18, 28, 0.95) 100%);
+            border: 2px solid var(--accent-gold);
+            padding: 20px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            gap: 10px;
+            font-size: 0.95rem;
+            font-weight: bold;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.7), inset 0 0 10px rgba(0,255,204,0.2);
+        }
+        .game-card:hover {
+            border-color: #fff;
+            transform: translateY(-5px) scale(1.03);
+            box-shadow: 0 12px 30px var(--accent-gold), inset 0 0 15px rgba(255,255,255,0.4);
+        }
+        .game-card span.game-icon { font-size: 2.5rem; filter: drop-shadow(0 0 8px rgba(255,255,255,0.5)); }
+        .game-card span.game-name { color: #fff; font-size: 0.9rem; letter-spacing: 0.5px; }
+
+        .header {
+            padding: 14px 18px;
+            background: rgba(16, 22, 34, 0.9);
+            backdrop-filter: blur(10px);
+            text-align: center;
+            border-bottom: 2px solid var(--accent-gold);
+            font-size: 1.1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.7);
+            margin-top: 25px; /* عشان شريط الإشعارات السيبراني فوق */
+        }
+        .back-btn { background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.2); padding: 6px 12px; border-radius: 8px; cursor: pointer; font-size: 0.9rem; transition: 0.2s; }
+        .back-btn:hover { background: rgba(255,255,255,0.2); border-color: var(--accent-gold); }
+        
+        .row-wrapper { width: 100%; max-width: 320px; display: flex; flex-direction: column; gap: 4px; opacity: 0.4; pointer-events: none; transition: 0.4s cubic-bezier(0.4,0,0.2,1); }
+        .row-wrapper.active { opacity: 1; pointer-events: auto; filter: drop-shadow(0 0 10px rgba(0,255,204,0.3)); }
+        .row-cells { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
+        .row-reveal-btn { background: linear-gradient(135deg, var(--accent-gold), var(--blue)); color: #000; border: none; padding: 6px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 0.8rem; width: 100%; display: block; box-shadow: 0 4px 12px rgba(0,0,0,0.4); transition: 0.2s; }
+        .row-reveal-btn:hover { transform: scale(1.02); filter: brightness(1.2); }
+
+        #game-board-apple { flex: 1; overflow-y: auto; display: flex; flex-direction: column-reverse; gap: 8px; padding: 12px; align-items: center; }
+        .apple-brick { height: 36px; background: rgba(25, 34, 50, 0.9); border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: center; align-items: center; font-size: 1.1rem; box-shadow: inset 0 2px 4px rgba(0,0,0,0.6); }
+        .revealed-apple { background: rgba(0, 255, 102, 0.15) !important; border-color: var(--win-green) !important; box-shadow: 0 0 12px rgba(0,255,102,0.4) !important; }
+        .revealed-bomb { background: rgba(255, 0, 85, 0.15) !important; border-color: var(--bomb-red) !important; box-shadow: 0 0 12px rgba(255,0,85,0.4) !important; }
+
+        .gems-container { background: rgba(10, 16, 28, 0.95); border: 2px solid var(--accent-gold); padding: 22px 16px; border-radius: 28px; text-align: center; width: 340px; margin: auto; box-shadow: var(--border-glow), 0 20px 40px rgba(0,0,0,0.8); display: flex; flex-direction: column; gap: 12px; max-height: 85vh; overflow-y: auto; }
+        .gems-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+        .cell-gem { height: 48px; background: radial-gradient(circle, var(--blue), #003355); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; border: 1px solid rgba(0,212,255,0.4); cursor: pointer; transition: 0.25s; box-shadow: inset 0 2px 5px rgba(255,255,255,0.2), 0 4px 10px rgba(0,0,0,0.5); }
+        .cell-gem:hover { transform: scale(1.08); border-color: #fff; box-shadow: 0 0 15px var(--blue); }
+        .revealed-gem { background: rgba(0,255,102,0.2) !important; border-color: var(--win-green) !important; box-shadow: 0 0 12px var(--win-green) !important; }
+        .revealed-gem-bomb { background: rgba(255,0,85,0.2) !important; border-color: var(--bomb-red) !important; box-shadow: 0 0 12px var(--bomb-red) !important; }
+
+        .royal-container { background: rgba(35, 10, 15, 0.95); padding: 22px 16px; border-radius: 24px; border: 2px solid var(--accent-gold); width: 100%; max-width: 350px; margin: auto; text-align: center; box-shadow: 0 0 25px rgba(255,204,0,0.3), 0 15px 30px rgba(0,0,0,0.7); display: flex; flex-direction: column; gap: 12px; max-height: 85vh; overflow-y: auto; }
+        .royal-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+        .cell-royal { height: 48px; background: radial-gradient(circle, var(--accent-gold), #996600); border-radius: 10px; display: flex; justify-content: center; align-items: center; font-size: 1.4rem; border: 1px solid rgba(255,204,0,0.4); cursor: pointer; transition: 0.25s; box-shadow: inset 0 2px 5px rgba(255,255,255,0.3), 0 4px 10px rgba(0,0,0,0.5); }
+        .cell-royal:hover { transform: scale(1.08); border-color: #fff; box-shadow: 0 0 15px var(--accent-gold); }
+        .revealed-food { background: rgba(0,255,102,0.2) !important; border-color: var(--win-green) !important; box-shadow: 0 0 12px var(--win-green) !important; }
+        .revealed-poison { background: rgba(255,0,85,0.2) !important; border-color: var(--bomb-red) !important; box-shadow: 0 0 12px var(--bomb-red) !important; }
+
+        .mine-container { background: rgba(18, 18, 30, 0.95); padding: 22px; border-radius: 16px; box-shadow: var(--border-glow), 0 15px 35px rgba(0,0,0,0.8); text-align: center; max-width: 400px; width: 100%; border: 2px solid var(--mine-teal); margin: auto; }
+        .mine-mode-buttons { display: flex; gap: 15px; justify-content: center; margin-top: 20px; }
+        .mine-mode-btn { background: rgba(30,30,50,0.8); color: var(--mine-teal); border: 2px solid var(--mine-teal); padding: 12px 20px; font-size: 16px; border-radius: 10px; cursor: pointer; font-weight: bold; flex: 1; transition: 0.3s; box-shadow: 0 4px 12px rgba(0,0,0,0.4); }
+        .mine-mode-btn:hover { background: var(--mine-teal); color: #05070a; box-shadow: 0 0 20px var(--mine-teal); transform: translateY(-3px); }
+        .mine-header-info { display: flex; justify-content: space-between; background: rgba(30,30,50,0.8); color: var(--mine-teal); padding: 10px 14px; border-radius: 8px; font-weight: bold; margin-bottom: 15px; font-size: 14px; border: 1px solid var(--mine-teal); }
+        .ladder { display: flex; flex-direction: column; gap: 8px; margin-bottom: 15px; }
+        .row-level { display: flex; gap: 8px; justify-content: center; }
+        .mine-box { background: rgba(35, 35, 55, 0.8); border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; height: 44px; flex: 1; display: flex; align-items: center; justify-content: center; font-size: 13px; color: #aaa; font-weight: bold; cursor: pointer; transition: 0.25s; }
+        .mine-box.active { border-color: var(--mine-teal); color: #fff; background: rgba(10, 30, 40, 0.9); box-shadow: 0 0 12px rgba(0,255,204,0.5); }
+        .mine-box.revealed-gold { background: rgba(0,255,102,0.2) !important; border-color: var(--win-green) !important; color: var(--win-green) !important; box-shadow: 0 0 10px var(--win-green) !important; }
+        .mine-box.revealed-bomb { background: rgba(255,0,85,0.2) !important; border-color: var(--bomb-red) !important; color: var(--bomb-red) !important; box-shadow: 0 0 10px var(--bomb-red) !important; }
+        .mine-btn { background: var(--mine-teal); color: #05070a; border: none; padding: 12px 20px; font-size: 15px; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; transition: 0.3s; box-shadow: 0 4px 15px rgba(0,255,204,0.4); }
+        .mine-btn:hover { filter: brightness(1.2); box-shadow: 0 0 20px var(--mine-teal); }
+
+        .controls { padding: 12px 18px; background: rgba(16, 22, 34, 0.9); backdrop-filter: blur(10px); border-top: 2px solid rgba(255,255,255,0.1); display: flex; gap: 12px; flex-shrink: 0; box-shadow: 0 -5px 20px rgba(0,0,0,0.7); }
+        .btn-3d { padding: 12px; border-radius: 12px; border: none; font-weight: 800; cursor: pointer; color: #05070a; width: 100%; box-shadow: 0 6px 20px rgba(0,0,0,0.5); transition: 0.3s; }
+        .btn-3d:hover { transform: scale(1.02); }
+
+        .id-manage-table { width: 100%; margin-top: 5px; border-collapse: collapse; font-size: 0.8rem; text-align: right; }
+        .id-manage-table th, .id-manage-table td { padding: 8px; border-bottom: 1px solid rgba(255,255,255,0.1); color: #ddd; }
+        .id-manage-table th { background: rgba(30,40,60,0.9); color: var(--accent-gold); }
+        .action-icon-btn { background: none; border: none; cursor: pointer; font-size: 0.95rem; padding: 2px 6px; transition: 0.2s; }
+        .action-icon-btn:hover { transform: scale(1.2); }
+
+        #ai-sim-overlay { position: fixed; inset: 0; background: rgba(5,7,10,0.92); backdrop-filter: blur(15px); display: none; justify-content: center; align-items: center; z-index: 3000; flex-direction: column; }
+        .ai-sim-box { background: rgba(18, 24, 36, 0.95); border: 2px solid var(--accent-gold); padding: 25px; border-radius: 20px; width: 85%; max-width: 320px; text-align: center; box-shadow: 0 0 30px rgba(0,255,204,0.4), inset 0 0 15px rgba(0,255,204,0.2); }
+
+        .timer-hud {
+            font-size: 0.85rem;
+            color: var(--accent-gold);
+            background: rgba(255,204,0,0.1);
+            border: 1px solid var(--accent-gold);
+            padding: 4px 10px;
+            border-radius: 8px;
+            font-family: monospace;
+            box-shadow: 0 0 10px rgba(255,204,0,0.2);
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+    </style>
+</head>
+<body>
+
+<!-- خلفية الجسيمات التفاعلية (Matrix Canvas) -->
+<canvas id="matrix-canvas"></canvas>
+
+<!-- شريط الإشعارات السيبراني العائم فوق -->
+<div class="cyber-ticker">
+    <span>⚡ [ متصل بسيرفر Xparibet الآمن 256-Bit ] &nbsp;&bull;&nbsp; [ الخوارزمية السيبرانية نشطة بنسبة 99.8% ] &nbsp;&bull;&nbsp; [ استمتع بتجربة ألعاب مخصصة وذكية ]</span>
+</div>
+
+<div id="ai-sim-overlay">
+    <div class="ai-sim-box">
+        <div style="font-size: 2.2rem; margin-bottom: 10px;">🌐</div>
+        <div id="ai-sim-text" style="font-size: 0.95rem; font-weight: bold; color: var(--accent-gold); margin-bottom: 15px; min-height: 35px;">جاري تحليل خوارزمية السيرفر...</div>
+        <div style="width: 100%; height: 6px; background: rgba(0,0,0,0.7); border-radius: 10px; overflow: hidden; border: 1px solid rgba(255,255,255,0.15);">
+            <div id="ai-sim-bar" style="width: 0%; height: 100%; background: linear-gradient(90deg, var(--blue), var(--neon-green)); transition: width 0.3s;"></div>
+        </div>
+    </div>
+</div>
+
+<!-- شاشة الباسورد (دورية 3D) -->
+<div id="pass-screen" class="overlay">
+    <div class="login-circle-3d">
+        <h2>SECURE ACCESS 🔐</h2>
+        <div class="trial-badge"><span>⚡</span> أدخل الباسورد الثابت</div>
+        <input type="password" id="pass-input" placeholder="أدخل الباسورد هنا">
+        <button class="btn-3d" style="background:var(--accent-gold); margin-top: 10px;" onclick="hapticFeedback(); checkPass()">دخول</button>
+        <div class="version-tag">SYSTEM v9.5 (Matrix Particle Engine)</div>
+    </div>
+</div>
+
+<div id="roma-panel" class="overlay" style="display:none">
+    <div class="login-box" style="border-color: var(--win-green); max-width: 420px;">
+        <h2 style="color: var(--win-green); font-size: 1.15rem;">إدارة وتفعيل الـ IDs المشتركة ⚙️</h2>
+        <div style="margin-top: 10px; text-align: right;">
+            <input type="text" id="new-id-input" placeholder="أدخل الـ ID الجديد للعميل" style="font-size: 0.85rem; padding: 10px;">
+            <div style="display: flex; gap: 8px; margin-top: 6px; align-items: center;">
+                <span style="font-size: 0.75rem; color: #aaa;">عدد المحاولات:</span>
+                <select id="new-id-attempts" style="margin: 0; padding: 6px; font-size: 0.85rem;">
+                    <option value="0">0 محاولات</option>
+                    <option value="1">1 محاولة</option>
+                    <option value="2">2 محاولات</option>
+                    <option value="3" selected>3 محاولات</option>
+                    <option value="4">4 محاولات</option>
+                    <option value="5">5 محاولات</option>
+                </select>
+            </div>
+            <button class="btn-3d" style="background: var(--win-green); color: #05070a; padding: 9px; font-size: 0.85rem; width: 100%; margin-top: 8px;" onclick="hapticFeedback(); addClientCustomID()">إضافة وتفعيل الـ ID</button>
+        </div>
+
+        <div style="margin-top: 15px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 8px; text-align: right;">
+            <span style="font-size: 0.75rem; color: var(--win-green); font-weight: bold;">الـ IDs المفعلة حالياً:</span>
+            <div style="max-height: 180px; overflow-y: auto; margin-top: 6px;">
+                <table class="id-manage-table" id="roma-ids-table">
+                    <thead>
+                        <tr>
+                            <th>الـ ID</th>
+                            <th>المحاولات</th>
+                            <th>تعديل</th>
+                            <th>إجراء</th>
+                        </tr>
+                    </thead>
+                    <tbody id="roma-ids-tbody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <button class="btn-3d" style="background:#333; color:white; margin-top: 15px; padding: 9px;" onclick="hapticFeedback(); closeRomaPanel()">خروج ❌</button>
+    </div>
+</div>
+
+<!-- شاشة الـ ID -->
+<div id="id-screen" class="overlay" style="display:none">
+    <div class="login-circle-3d">
+        <h2>ID LOGIN 🆔</h2>
+        <div class="trial-badge"><span>⚡</span> أدخل الـ ID الخاص بك</div>
+        <input type="text" id="id-input" placeholder="أدخل الـ ID هنا">
+        <button class="btn-3d" style="background:var(--accent-gold); margin-top: 10px;" onclick="hapticFeedback(); checkID()">تنشيط الاتصال</button>
+        <div class="version-tag">CLIENT AUTH 3D</div>
+    </div>
+</div>
+
+<!-- شاشة التحميل (الثقب الكوني) -->
+<div id="loading-screen" class="overlay" style="display:none">
+    <div class="portal-container">
+        <div class="portal-ring">
+            <div class="portal-core">🌀</div>
+        </div>
+        <div id="portal-loading-text" class="portal-text">جاري مزامنة التشفير الكوني...</div>
+    </div>
+    <div class="version-tag" style="bottom: 30px;">COSMIC MATRIX PORTAL 256-BIT</div>
+</div>
+
+<div id="game-loading-screen" class="overlay" style="display:none">
+    <div class="portal-container">
+        <div class="portal-ring">
+            <div class="portal-core">🎮</div>
+        </div>
+        <div id="game-portal-text" class="portal-text">جاري حقن المحرك بالبيئة الواقعية...</div>
+    </div>
+    <div class="version-tag" style="bottom: 30px;">3D ENGINE SYNC</div>
+</div>
+
+<!-- شاشة القائمة الرئيسية -->
+<div id="lobby-screen" class="overlay" style="display:none">
+    <div class="lobby-wrapper">
+        <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; padding: 0 5px;">
+            <h2 style="font-size: 1.4rem; background: linear-gradient(45deg, #fff, var(--accent-gold)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">اختر اللعبة 🎮</h2>
+            <div style="display: flex; gap: 8px; align-items: center;">
+                <div id="attempts-hud" class="timer-hud" style="color: var(--accent-gold); background: rgba(255,204,0,0.1); border-color: var(--accent-gold);">🎮 3</div>
+            </div>
+        </div>
+
+        <div class="games-row-top">
+            <div class="game-card" onclick="hapticFeedback(); openGame('crash')">
+                <span class="game-icon">✈️</span>
+                <span class="game-name">Crash</span>
+            </div>
+            <div class="game-card" onclick="hapticFeedback(); openGame('apple')">
+                <span class="game-icon">🍎</span>
+                <span class="game-name">Apple 3D</span>
+            </div>
+            <div class="game-card" onclick="hapticFeedback(); openGame('gems')">
+                <span class="game-icon">💎</span>
+                <span class="game-name">Gems</span>
+            </div>
+        </div>
+
+        <div class="games-row-bottom">
+            <div class="game-card" onclick="hapticFeedback(); openGame('royal')">
+                <span class="game-icon">🍗</span>
+                <span class="game-name">Royal Feast</span>
+            </div>
+            <div class="game-card" onclick="hapticFeedback(); openGame('goldmine')">
+                <span class="game-icon">⛏️</span>
+                <span class="game-name">Wild West</span>
+            </div>
+        </div>
+
+        <div class="version-tag" style="position: relative; margin-top: 5px;">MULTI-GAME LOBBY v9.5</div>
+    </div>
+</div>
+
+<div id="main-container" style="display:none; flex-direction:column; height:100%">
+    
+    <div id="game-apple" class="game-section" style="display:none; flex-direction:column; height:100%;">
+        <div class="header">
+            <button class="back-btn" onclick="hapticFeedback(); returnToLobby()">⬅ القائمة</button>
+            <span>Apple 🍎 [3D Mode]</span>
+            <div style="display: flex; gap: 6px;">
+                <div id="game-attempts-hud-apple" class="timer-hud" style="color: var(--accent-gold); background: rgba(255,204,0,0.1); border-color: var(--accent-gold);">🎮 3</div>
+            </div>
+        </div>
+        <div id="game-board-apple"></div>
+        <div class="controls">
+            <button class="btn-3d" style="background:var(--accent-gold); color:#05070a" onclick="hapticFeedback(); resetGameSession('apple')">إعادة تهيئة (Reset) 🔄</button>
+        </div>
+    </div>
+
+    <div id="game-gems" class="game-section" style="display:none; flex-direction:column; height:100%;">
+        <div class="header">
+            <button class="back-btn" onclick="hapticFeedback(); returnToLobby()">⬅ القائمة</button>
+            <span>Gems & Mines 💎</span>
+            <div style="display: flex; gap: 6px;">
+                <div id="game-attempts-hud-gems" class="timer-hud" style="color: var(--accent-gold); background: rgba(255,204,0,0.1); border-color: var(--accent-gold);">🎮 3</div>
+            </div>
+        </div>
+        <div style="flex:1; display:flex; justify-content:center; align-items:center; padding: 10px;">
+            <div class="gems-container">
+                <div style="font-size: 16px; color: var(--accent-gold); font-weight:bold;">RADAR GEMS 3D</div>
+                <div id="game-board-gems" class="royal-grid"></div>
+                <div style="font-size: 13px; color: #aaa;">اضغط على أي خانة لكشف محتواها بنظام النيون المتشابك!</div>
+                <button class="btn-3d" style="background:transparent; color:var(--blue); border:1px solid var(--blue); padding: 10px;" onclick="hapticFeedback(); resetGameSession('gems')">إعادة تهيئة الشبكة (Reset) 🔄</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="game-royal" class="game-section" style="display:none; flex-direction:column; height:100%;">
+        <div class="header">
+            <button class="back-btn" onclick="hapticFeedback(); returnToLobby()">⬅ القائمة</button>
+            <span>Royal Feast 🍗</span>
+            <div style="display: flex; gap: 6px;">
+                <div id="game-attempts-hud-royal" class="timer-hud" style="color: var(--accent-gold); background: rgba(255,204,0,0.1); border-color: var(--accent-gold);">🎮 3</div>
+            </div>
+        </div>
+        <div style="flex:1; display:flex; justify-content:center; align-items:center; background:rgba(27,0,0,0.6); padding: 10px;">
+            <div class="royal-container">
+                <div style="font-size: 16px; color: var(--accent-gold); font-weight: bold;">ROYAL FEAST RADAR 3D</div>
+                <div id="game-board-royal" class="royal-grid"></div>
+                <div style="font-size: 13px; color: #aaa;">اضغط على أي طبق لكشف محتواه بواقعية مذهلة!</div>
+                <button class="btn-3d" style="background:var(--accent-gold); color:#05070a; padding: 10px;" onclick="hapticFeedback(); resetGameSession('royal')">إعادة تهيئة الشبكة (Reset) 🔄</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="game-goldmine" class="game-section" style="display:none; flex-direction:column; height:100%;">
+        <div class="header">
+            <button class="back-btn" onclick="hapticFeedback(); returnToLobby()">⬅ القائمة</button>
+            <span>Wild West Gold ⛏️</span>
+            <div style="display: flex; gap: 6px;">
+                <div id="game-attempts-hud-gold" class="timer-hud" style="color: var(--accent-gold); background: rgba(255,204,0,0.1); border-color: var(--accent-gold);">🎮 3</div>
+            </div>
+        </div>
+        <div style="flex:1; display:flex; justify-content:center; align-items:center; background:rgba(18,12,8,0.6); padding: 10px;">
+            <div class="mine-container">
+                <div id="mineMainMenu">
+                    <h1 style="color: var(--mine-teal); margin-bottom: 12px; font-size: 18px;">🛡️ Wild West Gold 🔓</h1>
+                    <p style="color: #aaa; margin-bottom: 12px; font-size: 13px;">اختر نظام اللعب لتفعيل السكريبت ثلاثي الأبعاد:</p>
+                    <div class="mine-mode-buttons">
+                        <button class="mine-mode-btn" onclick="hapticFeedback(); initMineGameSession(2)">وضع 2x</button>
+                        <button class="mine-mode-btn" onclick="hapticFeedback(); initMineGameSession(3)">وضع 3x</button>
+                    </div>
+                </div>
+
+                <div id="mineGameArea" style="display:none;">
+                    <div class="mine-header-info">
+                        <div>الحالة: <span style="color: var(--mine-teal);">متصل بالمتعقب 🟢</span></div>
+                        <div>الخطوة: <span id="currentStepText">1</span> / 6</div>
+                    </div>
+
+                    <div class="ladder" id="ladderContainer"></div>
+
+                    <div id="mineMessage" style="font-size: 14px; font-weight: bold; margin: 10px 0; min-height: 25px; color: var(--accent-gold);">ابدأ من الأسفل واضغط على الخطوة الأولى للكشف!</div>
+
+                    <button id="nextSignalBtn" class="mine-btn" onclick="hapticFeedback(); resetMineVariables()" style="margin-bottom: 8px; display:none;">إرسال إشارة جديدة 🔄</button>
+                    <button class="mine-btn" style="background: rgba(255,255,255,0.1); color: #fff; border: 1px solid rgba(255,255,255,0.2);" onclick="hapticFeedback(); resetToMineMenu()">تغيير الوضع / القائمة</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    // --- تفعيل تأثيرات الهتزاز (Haptic Feedback) ---
+    function hapticFeedback() {
+        if (navigator.vibrate) {
+            navigator.vibrate(35); // اهتزاز خفيف جداً وراقي عند أي ضغطة
+        }
+    }
+
+    // --- نظام الجسيمات التفاعلية الخلفية (Interactive Matrix Particles) ---
+    const canvas = document.getElementById('matrix-canvas');
+    const ctx = canvas.getContext('2d');
+    let particles = [];
+    let mouse = { x: null, y: null, radius: 120 };
+
+    function resizeCanvas() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    window.addEventListener('mousemove', (e) => {
+        mouse.x = e.clientX;
+        mouse.y = e.clientY;
+    });
+
+    window.addEventListener('touchmove', (e) => {
+        if (e.touches.length > 0) {
+            mouse.x = e.touches[0].clientX;
+            mouse.y = e.touches[0].clientY;
+        }
+    });
+
+    class Particle {
+        constructor() {
+            this.x = Math.random() * canvas.width;
+            this.y = Math.random() * canvas.height;
+            this.vx = (Math.random() - 0.5) * 0.8;
+            this.vy = (Math.random() - 0.5) * 0.8;
+            this.size = Math.random() * 2 + 1;
+        }
+        update() {
+            this.x += this.vx;
+            this.y += this.vy;
+            if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
+            if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
+
+            // التفاعل مع حركة الماوس أو اللمس
+            if (mouse.x !== null && mouse.y !== null) {
+                let dx = mouse.x - this.x;
+                let dy = mouse.y - this.y;
+                let dist = Math.sqrt(dx * dx + dy * dy);
+                if (dist < mouse.radius) {
+                    let angle = Math.atan2(dy, dx);
+                    this.x -= Math.cos(angle) * 1.5;
+                    this.y -= Math.sin(angle) * 1.5;
+                }
+            }
+        }
+        draw() {
+            ctx.fillStyle = 'rgba(0, 255, 204, 0.45)';
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+            ctx.fill();
+        }
+    }
+
+    function initParticles() {
+        particles = [];
+        let count = Math.floor((canvas.width * canvas.height) / 12000);
+        for (let i = 0; i < count; i++) particles.push(new Particle());
+    }
+    initParticles();
+
+    function animateParticles() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        for (let i = 0; i < particles.length; i++) {
+            particles[i].update();
+            particles[i].draw();
+
+            // رسم خطوط اتصال بين الجسيمات القريبة لتصميم شبكة فخمة
+            for (let j = i + 1; j < particles.length; j++) {
+                let dx = particles[i].x - particles[j].x;
+                let dy = particles[i].y - particles[j].y;
+                let dist = Math.sqrt(dx * dx + dy * dy);
+                if (dist < 90) {
+                    ctx.strokeStyle = `rgba(0, 212, 255, ${0.12 * (1 - dist / 90)})`;
+                    ctx.lineWidth = 0.6;
+                    ctx.beginPath();
+                    ctx.moveTo(particles[i].x, particles[i].y);
+                    ctx.lineTo(particles[j].x, particles[j].y);
+                    ctx.stroke();
+                }
+            }
+        }
+        requestAnimationFrame(animateParticles);
+    }
+    animateParticles();
+
+    // --- منطق التطبيق البرمجي الأصلي (محفوظ بالكامل) ---
+    const GLOBAL_MASTER_KEY = "vip_3d_portal_password_db_v1";
+    const FIXED_PASSWORD = "809011";
+
+    const dynamicPalettes = [
+        { gold: '#00ffcc', blue: '#00d4ff', neon: '#00ff66', glow: 'rgba(0,255,204,0.4)' },
+        { gold: '#ffcc00', blue: '#ff9900', neon: '#ff0055', glow: 'rgba(255,204,0,0.4)' },
+        { gold: '#d900ff', blue: '#9900ff', neon: '#00ffff', glow: 'rgba(217,0,255,0.4)' }
+    ];
+
+    function applyDynamicColors() {
+        let randomPalette = dynamicPalettes[Math.floor(Math.random() * dynamicPalettes.length)];
+        let root = document.documentElement;
+        root.style.setProperty('--accent-gold', randomPalette.gold);
+        root.style.setProperty('--blue', randomPalette.blue);
+        root.style.setProperty('--neon-green', randomPalette.neon);
+        root.style.setProperty('--mine-teal', randomPalette.gold);
+        root.style.setProperty('--border-glow', `0 0 25px ${randomPalette.glow}, inset 0 0 15px rgba(0, 212, 255, 0.2)`);
+    }
+
+    function getGlobalDB() {
+        let defaultData = {
+            ids: { 
+                "123456": { status: "مفعل نشط", attempts: 3 },
+                "1690313233": { status: "مفعل نشط", attempts: 3 },
+                "1501217291": { status: "مفعل نشط", attempts: 3 },
+                "1658356877": { status: "مفعل نشط", attempts: 3 },
+                "254397541": { status: "مفعل نشط", attempts: 0 }
+            }
+        };
+        let stored = localStorage.getItem(GLOBAL_MASTER_KEY);
+        if (!stored) {
+            localStorage.setItem(GLOBAL_MASTER_KEY, JSON.stringify(defaultData));
+            return defaultData;
+        }
+        try {
+            let parsed = JSON.parse(stored);
+            if (!parsed.ids) parsed.ids = {};
+            return parsed;
+        } catch(e) {
+            return defaultData;
+        }
+    }
+
+    function saveGlobalDB(db) {
+        localStorage.setItem(GLOBAL_MASTER_KEY, JSON.stringify(db));
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+        applyDynamicColors();
+        getGlobalDB();
+    });
+
+    let activeClientKey = null;
+    let currentActiveGame = null;
+
+    function updateAttemptsHUD() {
+        let db = getGlobalDB();
+        if (activeClientKey && db.ids[activeClientKey]) {
+            let attempts = db.ids[activeClientKey].attempts;
+            ['attempts-hud', 'game-attempts-hud-apple', 'game-attempts-hud-gems', 'game-attempts-hud-royal', 'game-attempts-hud-gold'].forEach(id => {
+                let el = document.getElementById(id);
+                if (el) el.innerText = `🎮 ${attempts}`;
+            });
+        }
+    }
+
+    function consumeAttemptForGame(gameName) {
+        if (!activeClientKey) return true;
+        if (currentActiveGame === gameName) return true;
+
+        let db = getGlobalDB();
+        if (db.ids[activeClientKey]) {
+            if (db.ids[activeClientKey].attempts > 0) {
+                db.ids[activeClientKey].attempts -= 1;
+                saveGlobalDB(db);
+                updateAttemptsHUD();
+                currentActiveGame = gameName;
+                return true;
+            } else {
+                alert("لقد استنفدت عدد المحاولات المتاحة لهذا الـ ID!");
+                return false;
+            }
+        }
+        return true;
+    }
+
+    function runAISimulation(gameName, callback) {
+        if (!consumeAttemptForGame(gameName)) return;
+        
+        const overlay = document.getElementById('ai-sim-overlay');
+        const text = document.getElementById('ai-sim-text');
+        const bar = document.getElementById('ai-sim-bar');
+        
+        overlay.style.display = 'flex';
+        bar.style.width = '0%';
+
+        let steps = [
+            "جاري تحليل خوارزمية السيرفر ثلاثي الأبعاد...",
+            "تحليل أنماط التشابك والنيون العشوائي...",
+            "مطابقة النطاق الآمن بنسبة 99.9%...",
+            "تم الاستخراج وتفعيل الواقعية بنجاح!"
+        ];
+
+        let p = 0;
+        let interval = setInterval(() => {
+            p += 25;
+            bar.style.width = p + '%';
+            let stepIdx = Math.min(Math.floor(p / 30), steps.length - 1);
+            text.innerText = steps[stepIdx];
+
+            if (p >= 100) {
+                clearInterval(interval);
+                setTimeout(() => {
+                    overlay.style.display = 'none';
+                    if (callback) callback();
+                }, 250);
+            }
+        }, 180);
+    }
+
+    function addClientCustomID() {
+        let idVal = document.getElementById('new-id-input').value.trim();
+        let attVal = parseInt(document.getElementById('new-id-attempts').value);
+        if (idVal.length >= 1) {
+            let db = getGlobalDB();
+            db.ids[idVal] = { status: "مفعل نشط", attempts: attVal };
+            saveGlobalDB(db);
+            document.getElementById('new-id-input').value = '';
+            renderRomaIDsTable();
+            alert(`تم حفظ وتفعيل الـ ID (${idVal}) بنجاح! ✅`);
+        } else {
+            alert("يرجى كتابة ID صحيح!");
+        }
+    }
+
+    function updateIDAttempts(idKey, changeVal) {
+        let db = getGlobalDB();
+        if (db.ids[idKey]) {
+            db.ids[idKey].attempts = Math.max(0, (db.ids[idKey].attempts || 0) + changeVal);
+            saveGlobalDB(db);
+            renderRomaIDsTable();
+            if (activeClientKey === idKey) updateAttemptsHUD();
+        }
+    }
+
+    function renderRomaIDsTable() {
+        let tbody = document.getElementById('roma-ids-tbody');
+        tbody.innerHTML = '';
+        let db = getGlobalDB();
+        let keys = Object.keys(db.ids);
+
+        if (keys.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:#777;">لا توجد IDs مفعلة.</td></tr>`;
+            return;
+        }
+
+        keys.forEach(idKey => {
+            let attemptsCount = db.ids[idKey].attempts !== undefined ? db.ids[idKey].attempts : 3;
+            let tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td style="font-family:monospace; font-weight:bold; color:var(--win-green);">${idKey}</td>
+                <td><span style="font-size:0.75rem; color:var(--accent-gold);">${attemptsCount}</span></td>
+                <td style="display: flex; gap: 4px; align-items: center;">
+                    <button class="action-icon-btn" style="color:var(--win-green); font-weight:bold;" onclick="updateIDAttempts('${idKey}', 1)">+1</button>
+                    <button class="action-icon-btn" style="color:var(--bomb-red); font-weight:bold;" onclick="updateIDAttempts('${idKey}', -1)">-1</button>
+                </td>
+                <td><button class="action-icon-btn" onclick="deleteSingleID('${idKey}')">❌</button></td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    function deleteSingleID(idKey) {
+        let db = getGlobalDB();
+        delete db.ids[idKey];
+        saveGlobalDB(db);
+        renderRomaIDsTable();
+    }
+
+    function checkPass() {
+        let enteredPass = document.getElementById('pass-input').value.trim();
+
+        if (enteredPass === "Romaftw00") {
+            document.getElementById('pass-screen').style.display = 'none';
+            document.getElementById('roma-panel').style.display = 'flex';
+            renderRomaIDsTable();
+            document.getElementById('pass-input').value = '';
+            return;
+        }
+
+        if (enteredPass === FIXED_PASSWORD) {
+            document.getElementById('pass-screen').style.display = 'none';
+            document.getElementById('id-screen').style.display = 'flex';
+            document.getElementById('pass-input').value = '';
+            return;
+        }
+
+        alert("الباسورد الثابت غير صحيح!");
+        document.getElementById('pass-input').value = '';
+    }
+
+    function closeRomaPanel() {
+        document.getElementById('roma-panel').style.display = 'none';
+        document.getElementById('pass-screen').style.display = 'flex';
+    }
+
+    function checkID() { 
+        let idVal = document.getElementById('id-input').value.trim();
+        let db = getGlobalDB();
+        let foundKey = Object.keys(db.ids).find(k => k.trim() === idVal);
+
+        if (idVal.length >= 1 && foundKey) { 
+            activeClientKey = foundKey;
+            if (db.ids[foundKey].attempts === undefined) {
+                db.ids[foundKey].attempts = 3;
+                saveGlobalDB(db);
+            }
+            updateAttemptsHUD();
+            document.getElementById('id-screen').style.display = 'none'; 
+            startServerConnection(); 
+        } else { 
+            alert("عذراً، هذا الـ ID غير مسجل أو غير مفعل من قبل الإدارة!"); 
+        } 
+    }
+
+    function startServerConnection() {
+        const loadScreen = document.getElementById('loading-screen');
+        const portalMsg = document.getElementById('portal-loading-text');
+        
+        loadScreen.style.display = 'flex';
+        applyDynamicColors();
+
+        let portalSteps = [
+            "جاري فتح البوابة الكونية للسيرفر...",
+            "فحص خوارزميات التشفير المتقدمة...",
+            "مطابقة النطاق الآمن بنسبة 100%...",
+            "تم الاتصال بنجاح!"
+        ];
+
+        let idx = 0;
+        let pInterval = setInterval(() => {
+            idx++;
+            if (idx < portalSteps.length) {
+                portalMsg.innerText = portalSteps[idx];
+            }
+        }, 900);
+
+        setTimeout(() => {
+            clearInterval(pInterval);
+            loadScreen.style.display = 'none';
+            document.getElementById('lobby-screen').style.display = 'flex';
+        }, 3600);
+    }
+
+    function openGame(gameName) {
+        if(gameName === 'crash') {
+            alert("هذه اللعبة غير متوفرة حالياً ✈️");
+            return;
+        }
+
+        document.getElementById('lobby-screen').style.display = 'none';
+        const gameLoadScreen = document.getElementById('game-loading-screen');
+        const gamePortalMsg = document.getElementById('game-portal-text');
+        
+        gameLoadScreen.style.display = 'flex';
+        
+        let gameTitles = {
+            'apple': 'Apple 3D 🍎',
+            'gems': 'Gems & Mines 💎',
+            'royal': 'Royal Feast 🍗',
+            'goldmine': 'Wild West Gold ⛏️'
+        };
+
+        gamePortalMsg.innerText = `جاري مزامنة بيئة ${gameTitles[gameName]} عبر البوابة...`;
+
+        setTimeout(() => {
+            gameLoadScreen.style.display = 'none';
+            document.getElementById('main-container').style.display = 'flex';
+            document.querySelectorAll('.game-section').forEach(sec => sec.style.display = 'none');
+            
+            if(gameName === 'apple') {
+                document.getElementById('game-apple').style.display = 'flex';
+                startGameAppleSetup();
+            } else if(gameName === 'gems') {
+                document.getElementById('game-gems').style.display = 'flex';
+                renderGemsGridSetup();
+            } else if(gameName === 'royal') {
+                document.getElementById('game-royal').style.display = 'flex';
+                initRoyalGameSetup();
+            } else if(gameName === 'goldmine') {
+                document.getElementById('game-goldmine').style.display = 'flex';
+                document.getElementById('mineMainMenu').style.display = 'block';
+                document.getElementById('mineGameArea').style.display = 'none';
+            }
+        }, 1800);
+    }
+
+    function returnToLobby() {
+        currentActiveGame = null;
+        document.getElementById('main-container').style.display = 'none';
+        document.getElementById('lobby-screen').style.display = 'flex';
+        updateAttemptsHUD();
+    }
+
+    function resetGameSession(gameName) {
+        currentActiveGame = null;
+        if(gameName === 'apple') startGameAppleSetup();
+        else if(gameName === 'gems') renderGemsGridSetup();
+        else if(gameName === 'royal') initRoyalGameSetup();
+    }
+
+    let curAppleRow = 0;
+    let appleRowsData = [];
+
+    function startGameAppleSetup() {
+        const board = document.getElementById('game-board-apple');
+        board.innerHTML = '';
+        curAppleRow = 0;
+        appleRowsData = [];
+
+        for (let i = 0; i < 10; i++) {
+            let bombCount = 1;
+            if (i >= 4 && i < 7) bombCount = 2;
+            else if (i >= 7 && i < 9) bombCount = 3;
+            else if (i >= 9) bombCount = 4;
+
+            let bombs = [];
+            while(bombs.length < bombCount) {
+                let r = Math.floor(Math.random() * 5);
+                if(!bombs.includes(r)) bombs.push(r);
+            }
+            appleRowsData.push(bombs);
+
+            const wrapper = document.createElement('div');
+            wrapper.className = 'row-wrapper' + (i === 0 ? ' active' : '');
+            wrapper.id = 'apple-row-' + i;
+
+            const rDiv = document.createElement('div');
+            rDiv.className = 'row-cells';
+            for (let j = 0; j < 5; j++) {
+                const b = document.createElement('div');
+                b.className = 'apple-brick';
+                b.innerText = '🔒';
+                rDiv.appendChild(b);
+            }
+            wrapper.appendChild(rDiv);
+
+            const revealBtn = document.createElement('button');
+            revealBtn.className = 'row-reveal-btn';
+            revealBtn.innerText = `🔍 كشف الصف (${i + 1})`;
+            revealBtn.onclick = () => {
+                hapticFeedback();
+                runAISimulation('apple', () => revealAppleRow(i));
+            };
+            wrapper.appendChild(revealBtn);
+            board.appendChild(wrapper);
+        }
+    }
+
+    function revealAppleRow(rowIdx) {
+        if (rowIdx !== curAppleRow) return;
+
+        const wrapper = document.getElementById('apple-row-' + rowIdx);
+        const bricks = wrapper.querySelectorAll('.apple-brick');
+        wrapper.querySelector('.row-reveal-btn').style.display = 'none';
+
+        let bombs = appleRowsData[rowIdx];
+        for (let j = 0; j < 5; j++) {
+            if (bombs.includes(j)) {
+                bricks[j].innerText = '💣';
+                bricks[j].className = 'apple-brick revealed-bomb';
+            } else {
+                bricks[j].innerText = '🍎';
+                bricks[j].className = 'apple-brick revealed-apple';
+            }
+        }
+
+        curAppleRow++;
+        if (curAppleRow < 10) {
+            let nextWrapper = document.getElementById('apple-row-' + curAppleRow);
+            if (nextWrapper) nextWrapper.classList.add('active');
+        } else {
+            alert("تم كشف جميع خطوات الشجرة بنجاح! 🏆");
+        }
+    }
+
+    let gemsBombPositions = [];
+
+    function renderGemsGridSetup() {
+        const board = document.getElementById('game-board-gems');
+        board.innerHTML = "";
+        gemsBombPositions = [];
+
+        let allIndices = [];
+        for (let idx = 0; idx < 25; idx++) allIndices.push(idx);
+        gemsBombPositions = allIndices.sort(() => Math.random() - 0.5).slice(0, 2);
+
+        for (let i = 0; i < 25; i++) {
+            const cell = document.createElement('div');
+            cell.className = 'cell-gem';
+            cell.innerText = '❓';
+            cell.onclick = () => {
+                hapticFeedback();
+                runAISimulation('gems', () => revealGemsCell(cell, i));
+            };
+            board.appendChild(cell);
+        }
+    }
+
+    function revealGemsCell(cell, index) {
+        if (cell.classList.contains('revealed-gem') || cell.classList.contains('revealed-gem-bomb')) return;
+
+        if (gemsBombPositions.includes(index)) {
+            cell.innerText = '💣';
+            cell.className = 'cell-gem revealed-gem-bomb';
+        } else {
+            cell.innerText = '💎';
+            cell.className = 'cell-gem revealed-gem';
+        }
+    }
+
+    let royalRowsData = [];
+
+    function initRoyalGameSetup() {
+        const board = document.getElementById('game-board-royal');
+        board.innerHTML = "";
+        royalRowsData = [];
+
+        let rowPoisonCounts = [3, 1, 2, 2, 2];
+        rowPoisonCounts.sort(() => Math.random() - 0.5);
+
+        for (let r = 0; r < 5; r++) {
+            let poisonCount = rowPoisonCounts[r];
+            let rowIndices = [0, 1, 2, 3, 4].map(col => (r * 5) + col);
+            let rowPoisons = rowIndices.sort(() => Math.random() - 0.5).slice(0, poisonCount);
+            royalRowsData.push(...rowPoisons);
+        }
+
+        for (let i = 0; i < 25; i++) {
+            const cell = document.createElement('div');
+            cell.className = 'cell-royal';
+            cell.innerText = '❓';
+            cell.onclick = () => {
+                hapticFeedback();
+                runAISimulation('royal', () => revealRoyalCell(cell, i));
+            };
+            board.appendChild(cell);
+        }
+    }
+
+    function revealRoyalCell(cell, index) {
+        if (cell.classList.contains('revealed-food') || cell.classList.contains('revealed-poison')) return;
+
+        const foods = ["🍗", "🥩", "🍰", "🍕"];
+        if (royalRowsData.includes(index)) {
+            cell.innerText = '☠️';
+            cell.className = 'cell-royal revealed-poison';
+        } else {
+            cell.innerText = foods[Math.floor(Math.random() * foods.length)];
+            cell.className = 'cell-royal revealed-food';
+        }
+    }
+
+    let mineMode = 2; 
+    let mineCurrentStep = 0; 
+    const mineTotalSteps = 6; 
+    let mineWinningPaths = []; 
+
+    function initMineGameSession(selectedMode) {
+        mineMode = selectedMode;
+        document.getElementById('mineMainMenu').style.display = 'none';
+        document.getElementById('mineGameArea').style.display = 'block';
+        resetMineVariables();
+    }
+
+    function resetMineVariables() {
+        mineCurrentStep = 0;
+        mineWinningPaths = [];
+        document.getElementById('nextSignalBtn').style.display = 'none';
+        document.getElementById('mineMessage').innerText = "السكريبت جاهز.. ابدأ من الأسفل للصعود أعلى!";
+
+        for (let i = 0; i < mineTotalSteps; i++) {
+            mineWinningPaths.push(Math.floor(Math.random() * mineMode));
+        }
+        buildMineLadder();
+    }
+
+    function buildMineLadder() {
+        const ladder = document.getElementById('ladderContainer');
+        ladder.innerHTML = "";
+
+        for (let i = mineTotalSteps - 1; i >= 0; i--) {
+            const row = document.createElement('div');
+            row.className = 'row-level';
+            row.id = `row-${i}`;
+
+            for (let j = 0; j < mineMode; j++) {
+                const box = document.createElement('div');
+                box.className = `mine-box ${i === mineCurrentStep ? 'active' : ''}`;
+                box.innerText = i === mineCurrentStep ? "🔍 اكشف" : "🔒 مغلق";
+                box.onclick = () => {
+                    hapticFeedback();
+                    runAISimulation('goldmine', () => revealMineStep(i));
+                };
+                row.appendChild(box);
+            }
+            ladder.appendChild(row);
+        }
+        document.getElementById('currentStepText').innerText = mineCurrentStep + 1;
+    }
+
+    function revealMineStep(step) {
+        if (step !== mineCurrentStep) return;
+
+        const correctIndex = mineWinningPaths[step];
+        const row = document.getElementById(`row-${step}`);
+        const boxes = row.children;
+
+        for (let j = 0; j < boxes.length; j++) {
+            boxes[j].onclick = null;
+            if (j === correctIndex) {
+                boxes[j].innerHTML = "🪙 ذهب";
+                boxes[j].className = "mine-box revealed-gold";
+            } else {
+                boxes[j].innerHTML = "🧨 ديناميت";
+                boxes[j].className = "mine-box revealed-bomb";
+            }
+        }
+
+        mineCurrentStep++;
+        if (mineCurrentStep < mineTotalSteps) {
+            document.getElementById('mineMessage').innerText = "ممتاز! اصعد للخطوة التالية للأعلى ⚡";
+            activateMineCurrentStep();
+        } else {
+            document.getElementById('mineMessage').innerText = "وصلت للقمة وتم كشف جميع الخطوات بنجاح! 🏆";
+            document.getElementById('nextSignalBtn').style.display = 'block';
+        }
+        document.getElementById('currentStepText').innerText = Math.min(mineCurrentStep + 1, mineTotalSteps);
+    }
+    
+    function activateMineCurrentStep() {
+        if (mineCurrentStep < mineTotalSteps) {
+            const row = document.getElementById(`row-${mineCurrentStep}`);
+            if (row) {
+                for (let box of row.children) {
+                    box.className = "mine-box active";
+                    box.innerText = "🔍 اكشف";
+                    box.onclick = () => {
+                        hapticFeedback();
+                        runAISimulation('goldmine', () => revealMineStep(mineCurrentStep));
+                    };
+                }
+            }
+        }
+    }
+
+    function resetToMineMenu() {
+        currentActiveGame = null;
+        document.getElementById('mineGameArea').style.display = 'none';
+        document.getElementById('mineMainMenu').style.display = 'block';
+    }
+</script>
+</body>
+</html>
